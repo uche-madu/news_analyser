@@ -8,7 +8,6 @@ def clean_html(raw_html):
 
 class LatestPrnewsSpider(scrapy.Spider):
     name = "latest_prnews"
-    # allowed_domains = ["https://www.prnewswire.com"]
     start_urls = [
         "https://www.prnewswire.com/news-releases/news-releases-list/?page=1&pagesize=100",
     ]
@@ -20,15 +19,6 @@ class LatestPrnewsSpider(scrapy.Spider):
             href = new.css("a::attr(href)").get()
             news_url = f"https://www.prnewswire.com{href}"
 
-            # lang = new.css("div::attr(lang)").get()
-            # title = new.css("h3::text")[1].get()
-
-            # yield {
-            #     "lang": lang,
-            #     "title": title,
-            #     "url": news_url,
-            # }
-
             yield response.follow(news_url, callback=self.parse_news_page)
 
         next_page = response.css("ul.pagination  a::attr(href)")[-1].get()
@@ -37,22 +27,19 @@ class LatestPrnewsSpider(scrapy.Spider):
             yield response.follow(next_page_url, callback=self.parse)
 
     def parse_news_page(self, response):
-        dirty = response.css("div.col-lg-10.col-lg-offset-1 p")[1:].getall()
-        subhead = response.css("p.prntac i::text").getall()
+        dirty_article = response.css("div.col-lg-10.col-lg-offset-1 p").getall()
         headline = response.css("h1::text").get()
 
-        clean_subhead = ""
-        for i in subhead:
-            clean_subhead += clean_html(i)
-
         clean_article = ""
-        for dirt in dirty:
+        for dirt in dirty_article:
             clean_article += clean_html(dirt) + "\n\n"
         
         yield {
+            "published_on": response.xpath("//p[@class='mb-no']/text()").get(),
+            "news_provided_by": response.xpath("//p[@class='meta']/following-sibling::a/strong/text()").get(),
             "headline": headline,
-            "subhead": subhead,
             "article": clean_article,
-            "url": response.url
+            "url": response.url,
+            
         }
         
