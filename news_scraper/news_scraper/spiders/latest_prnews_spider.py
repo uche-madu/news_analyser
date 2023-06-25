@@ -1,5 +1,6 @@
 import scrapy
 import re
+from news_scraper.items import NewsScraperItem
 
 def clean_html(raw_html):
     cleanr = re.compile('<.*?>')
@@ -11,6 +12,13 @@ class LatestPrnewsSpider(scrapy.Spider):
     start_urls = [
         "https://www.prnewswire.com/news-releases/news-releases-list/?page=1&pagesize=100",
     ]
+    # override FEEDS in settings.py
+    custom_settings = {
+        'FEEDS': {
+            'latest_prnews_articles.jsonl': {'format': 'jsonlines', 'overwrite': False}
+        }
+    
+    }
 
     def parse(self, response):
 
@@ -34,12 +42,14 @@ class LatestPrnewsSpider(scrapy.Spider):
         for dirt in dirty_article:
             clean_article += clean_html(dirt) + "\n\n"
         
-        yield {
-            "published_on": response.xpath("//p[@class='mb-no']/text()").get(),
-            "news_provided_by": response.xpath("//p[@class='meta']/following-sibling::a/strong/text()").get(),
-            "headline": headline,
-            "article": clean_article,
-            "url": response.url,
-            
-        }
+        news_item = NewsScraperItem()
+        
+        news_item["published_on"] = response.xpath("//p[@class='mb-no']/text()").get()
+        news_item["news_provided_by"] = response.xpath("//p[@class='meta']/following-sibling::a/strong/text()").get()
+        news_item["headline"] = headline
+        news_item["article"] = clean_article
+        news_item["url"] = response.url
+        
+        yield news_item
+    
         
