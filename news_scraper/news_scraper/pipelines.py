@@ -8,7 +8,12 @@
 from itemadapter import ItemAdapter
 from datetime import datetime
 import pytz
+from google.cloud import storage
 
+
+storage_client = storage.Client()
+
+bucket = storage_client.create_bucket("scrapy/latest_prnews")
 
 class NewsScraperPipeline:
     def process_item(self, item, spider):
