@@ -13,7 +13,8 @@ SPIDER_MODULES = ["news_scraper.spiders"]
 NEWSPIDER_MODULE = "news_scraper.spiders"
 
 FEEDS = {
-    'latest_prnews_articles.jsonl': {'format': 'jsonlines'}
+    'latest_prnews_articles.csv': {'format': 'csv'},
+    'latest_prnews_articles.jsonl': {'format': 'jsonlines', 'overwrite': False}
 }
 
 
@@ -68,6 +69,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "news_scraper.pipelines.NewsScraperPipeline": 300,
+   "news_scraper.pipelines.GCSStoragePipeline": 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -95,3 +97,10 @@ ITEM_PIPELINES = {
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+# Settings for storing scraped files in GCS
+# FILES_STORE = "gs://scrapy/latest_prnews/"
+# GCS_PROJECT_ID = "dbt-test-drive-388101"
+
+GCS_BUCKET_NAME = 'scrapy'
+# GCS_FILE_NAME = "latest_prnews/latest_prnews_articles.json"

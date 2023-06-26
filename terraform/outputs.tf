@@ -18,3 +18,8 @@ output "key" {
   value       = module.service_accounts.key
   sensitive   = true
 }
+
+output "scrapy_bucket" {
+  description = "GCS bucket for Scrapy project"
+  value = google_storage_bucket.scrapy.url
+}

@@ -12,14 +12,6 @@ terraform {
   }
 }
 
-# data "google_storage_bucket" "prnews_articles" {
-#     name = "scrapy"
-# }
-
-# resource "google_cloud_storage" "prnews_articles" {
-
-# }
-
 # resource "google_service_account" "scrapy_sa" {
 #   account_id   = "scrapy-sa"
 #   display_name = "Scrapy Service Account"
@@ -37,6 +29,12 @@ terraform {
 #     ]
 # }
 
+
+# resource "google_project_iam_binding" "my_project" {
+#   project = var.project
+#   members = []
+#   role    = "roles/storage.admin"
+# }
 resource "google_project_service" "gcp_services" {
   for_each = toset(var.gcp_services)
   service  = each.key
@@ -57,4 +55,15 @@ module "service_accounts" {
   description   = "Service account for scrapy projects"
   generate_keys = true
   depends_on    = [google_project_service.gcp_services]
+}
+
+resource "google_storage_bucket" "scrapy" {
+  name     = "scrapy"
+  location = "US"
+}
+
+resource "google_storage_bucket_object" "latest_prnews" {
+  name   = "latest_prnews/" 
+  content = " "            
+  bucket = google_storage_bucket.scrapy.id
 }
