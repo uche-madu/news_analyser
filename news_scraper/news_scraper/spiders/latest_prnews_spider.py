@@ -15,7 +15,8 @@ class LatestPrnewsSpider(scrapy.Spider):
     # override FEEDS in settings.py
     custom_settings = {
         'FEEDS': {
-            'latest_prnews_articles.jsonl': {'format': 'jsonlines', 'overwrite': False}
+            'data/%(name)s/%(name)s_%(time)s.jsonl': {'format': 'jsonlines', 'overwrite': False},
+            'data/%(name)s/%(name)s_%(time)s.csv': {'format': 'csv', 'overwrite': False},
         }
     
     }
