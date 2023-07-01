@@ -7,6 +7,10 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 BOT_NAME = "news_scraper"
 
 SPIDER_MODULES = ["news_scraper.spiders"]
@@ -14,7 +18,10 @@ NEWSPIDER_MODULE = "news_scraper.spiders"
 
 FEEDS = {
     'latest_prnews_articles.csv': {'format': 'csv'},
-    'latest_prnews_articles.jsonl': {'format': 'jsonlines', 'overwrite': False}
+    'latest_prnews_articles.jsonl': {
+        'format': 'jsonlines', 
+        # 'overwrite': False
+        }
 }
 
 
@@ -22,7 +29,7 @@ FEEDS = {
 #USER_AGENT = "news_scraper (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -55,9 +62,18 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
+DOWNLOADER_MIDDLEWARES = {
 #    "news_scraper.middlewares.NewsScraperDownloaderMiddleware": 543,
-#}
+    # "news_scraper.middlewares.ScrapeOpsFakeUserAgentMiddleware": 400,
+    "news_scraper.middlewares.ScrapeOpsFakeBrowserHeaderAgentMiddleware": 400
+}
+
+SCRAPEOPS_API_KEY = os.getenv("SCRAPEOPS_API_KEY")
+SCRAPEOPS_FAKE_USER_AGENT_ENDPOINT = os.getenv("SCRAPEOPS_FAKE_USER_AGENT_ENDPOINT")
+SCRAPEOPS_FAKE_USER_AGENT_ENABLED = os.getenv("SCRAPEOPS_FAKE_USER_AGENT_ENABLED")
+SCRAPEOPS_NUM_RESULTS = os.getenv("SCRAPEOPS_NUM_RESULTS")
+SCRAPEOPS_FAKE_BROWSER_HEADER_ENABLED = os.getenv("SCRAPEOPS_FAKE_BROWSER_HEADER_ENABLED")
+
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -69,7 +85,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "news_scraper.pipelines.NewsScraperPipeline": 300,
-   "news_scraper.pipelines.GCSStoragePipeline": 400,
+#    "news_scraper.pipelines.GCSStoragePipeline": 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -99,8 +115,4 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
 # Settings for storing scraped files in GCS
-# FILES_STORE = "gs://scrapy/latest_prnews/"
-# GCS_PROJECT_ID = "dbt-test-drive-388101"
-
 GCS_BUCKET_NAME = 'scrapy'
-# GCS_FILE_NAME = "latest_prnews/latest_prnews_articles.json"
