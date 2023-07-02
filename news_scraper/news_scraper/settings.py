@@ -65,7 +65,9 @@ ROBOTSTXT_OBEY = False
 DOWNLOADER_MIDDLEWARES = {
 #    "news_scraper.middlewares.NewsScraperDownloaderMiddleware": 543,
     # "news_scraper.middlewares.ScrapeOpsFakeUserAgentMiddleware": 400,
-    "news_scraper.middlewares.ScrapeOpsFakeBrowserHeaderAgentMiddleware": 400
+    "news_scraper.middlewares.ScrapeOpsFakeBrowserHeaderAgentMiddleware": 400,
+    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
 }
 
 SCRAPEOPS_API_KEY = os.getenv("SCRAPEOPS_API_KEY")
@@ -116,3 +118,6 @@ FEED_EXPORT_ENCODING = "utf-8"
 
 # Settings for storing scraped files in GCS
 GCS_BUCKET_NAME = 'scrapy'
+
+# Rotating Proxies
+ROTATING_PROXY_LIST_PATH = '../../news_analyser/proxies.txt'
